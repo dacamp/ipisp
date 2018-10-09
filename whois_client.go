@@ -29,7 +29,7 @@ type whoisClient struct {
 	Conn net.Conn
 	w    *bufio.Writer
 	sc   *bufio.Scanner
-	ncmu *sync.Mutex
+	ncmu sync.Mutex
 }
 
 // NewWhoisClient returns a connected WHOIS client.
@@ -39,7 +39,6 @@ func NewWhoisClient() (Client, error) {
 
 	client := &whoisClient{}
 	client.Conn, err = net.DialTimeout("tcp", cymruNetcatAddress, Timeout)
-	client.ncmu = &sync.Mutex{}
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -60,7 +59,6 @@ func NewWhoisClient() (Client, error) {
 
 	// Discard first hello line
 	client.sc.Scan()
-	client.sc.Bytes()
 	return client, errors.Wrap(client.sc.Err(), "failed to read from scanner")
 }
 
