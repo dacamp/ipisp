@@ -98,13 +98,12 @@ func (c *whoisClient) LookupIPs(ips []net.IP) (resp []Response, err error) {
 
 	// Read results
 	for !finished && c.sc.Scan() {
-
 		raw = c.sc.Bytes()
 		if bytes.HasPrefix(raw, []byte("Error: ")) {
 			return resp, errors.New(string(bytes.TrimSpace(bytes.TrimLeft(raw, "Error: "))))
 		}
-		tokens = bytes.Split(raw, ncSep)
 
+		tokens = bytes.Split(raw, ncSep)
 		if len(tokens) != netcatIPTokensLength {
 			return resp, ErrUnexpectedTokens
 		}
@@ -114,8 +113,6 @@ func (c *whoisClient) LookupIPs(ips []net.IP) (resp []Response, err error) {
 			tokens[i] = bytes.TrimSpace(tokens[i])
 		}
 
-		re := Response{}
-
 		// Read ASN
 		asnList := string(tokens[0])
 
@@ -124,10 +121,11 @@ func (c *whoisClient) LookupIPs(ips []net.IP) (resp []Response, err error) {
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to parse asn list %v", asnList)
 		}
-		re.ASN = asns[0]
 
-		// Read IP
-		re.IP = net.ParseIP(string(tokens[1]))
+		re := Response{
+			ASN: asns[0],
+			IP:  net.ParseIP(string(tokens[1])),
+		}
 
 		// Read range
 		bgpPrefix := string(tokens[2])
@@ -142,7 +140,7 @@ func (c *whoisClient) LookupIPs(ips []net.IP) (resp []Response, err error) {
 		}
 
 		// Read country
-		re.Country = string(bytes.TrimSpace(tokens[3]))
+		re.Country = string(tokens[3])
 
 		// Read registry
 		re.Registry = string(bytes.ToUpper(tokens[4]))
