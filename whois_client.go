@@ -20,6 +20,7 @@ const (
 
 var (
 	ncEOL               = []byte("\r\n")
+	ncSep               = []byte{'|'}
 	ErrUnexpectedTokens = errors.New("Unexpected tokens while reading Cymru response.")
 	Timeout             = time.Second * 10 // TCP connection timeout
 )
@@ -102,7 +103,7 @@ func (c *whoisClient) LookupIPs(ips []net.IP) (resp []Response, err error) {
 		if bytes.HasPrefix(raw, []byte("Error: ")) {
 			return resp, errors.New(string(bytes.TrimSpace(bytes.TrimLeft(raw, "Error: "))))
 		}
-		tokens = bytes.Split(raw, []byte{'|'})
+		tokens = bytes.Split(raw, ncSep)
 
 		if len(tokens) != netcatIPTokensLength {
 			return resp, ErrUnexpectedTokens
