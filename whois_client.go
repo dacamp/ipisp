@@ -12,24 +12,16 @@ import (
 	"github.com/pkg/errors"
 )
 
-var ncEOL = []byte("\r\n")
-
-// Timeout is the TCP connection timeout
-var Timeout = time.Second * 10
-
-// Common errors
-var (
-	ErrUnexpectedTokens = errors.New("Unexpected tokens while reading Cymru response.")
-)
-
 const (
+	cymruNetcatAddress    = "whois.cymru.com:43" // Service address
 	netcatIPTokensLength  = 7
 	netcatASNTokensLength = 5
 )
 
-// Service address
-const (
-	cymruNetcatAddress = "whois.cymru.com:43"
+var (
+	ncEOL               = []byte("\r\n")
+	ErrUnexpectedTokens = errors.New("Unexpected tokens while reading Cymru response.")
+	Timeout             = time.Second * 10 // TCP connection timeout
 )
 
 // whoisClient uses the whois client
